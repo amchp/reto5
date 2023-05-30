@@ -1,3 +1,4 @@
+from typing import Generator
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
@@ -15,11 +16,15 @@ class MRMostViewedDate(MRJob):
         data_row : dict[str, str] = dict(zip(columns, line.split(',')))
         yield (data_row['date'], 1)
 
-    def reducer_add_movies_per_date(self, dia : str, movies : tuple[int]):
+    def reducer_add_movies_per_date(self, dia : str, movies : Generator[tuple[int], None, None]):
         yield (None, (sum(movies), dia))
         
-    def reducer_get_most_viewed_date(self, _, movies_date : tuple[tuple[int, str]]):
-        yield max(movies_date)
+    def reducer_get_most_viewed_date(self, _, movies_date : Generator[tuple[tuple[int, str]], None, None]):
+        list_movies_date = list(movies_date)
+        most_viewed = max(list_movies_date)[0]
+        for views, date in list_movies_date:
+            if views == most_viewed:
+                yield (date, views)
 
 
 if __name__ == '__main__':

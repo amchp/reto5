@@ -1,3 +1,4 @@
+from typing import Generator
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
@@ -14,9 +15,9 @@ class MRBestAndWorstRatedMovieByGenre(MRJob):
         data_row : dict[str, str] = dict(zip(columns, line.split(',')))
         yield (data_row['genre'], (int(data_row['rating']), data_row['movie']))
 
-    def reducer_get_max_and_min_mean_ratings_per_genre(self, genre : str, ratings_and_movie : tuple[tuple[int, str]]):
+    def reducer_get_max_and_min_mean_ratings_per_genre(self, genre : str, ratings_and_movie : Generator[tuple[tuple[int, str]], None, None]):
         movies_sum_ratings : dict[str, list[int]] = {}
-        num_ratings : dict[str, int]
+        num_ratings : dict[str, int] = {}
         for rating, movie in ratings_and_movie:
             if movie in movies_sum_ratings:
                 movies_sum_ratings[movie] += rating
