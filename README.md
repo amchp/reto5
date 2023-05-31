@@ -1,5 +1,19 @@
 # Reto 5
 
+## Crear S3 Bucket
+
+- Ir a servicio S3
+
+<img width="1280" alt="Screenshot 2023-05-31 at 10 51 00 AM" src="https://github.com/amchp/reto5/assets/28406146/a259546d-b1d7-4478-adb4-02d003fa8f9f">
+
+- Hacer click en "Create bucket"
+
+<img width="1280" alt="Screenshot 2023-05-31 at 10 50 39 AM" src="https://github.com/amchp/reto5/assets/28406146/53f77f8e-7e33-472f-a876-fa35138214cb">
+
+- Ponerle nombre al bucket y dejar el resto de la configuración por defecto
+
+<img width="1280" alt="Screenshot 2023-05-31 at 10 50 52 AM" src="https://github.com/amchp/reto5/assets/28406146/270a9191-b8c1-44a8-9f9a-cedc27f3156e">
+
 ## Crear un cluster EMR
 
 - Primero, entrar AWS y buscar en servicios EMR.
@@ -44,3 +58,30 @@
 
 <img width="1280" alt="Screenshot 2023-05-31 at 10 19 36 AM" src="https://github.com/amchp/reto5/assets/28406146/235b9318-85cd-4846-a0aa-23ea6c2c92df">
 
+
+## Correr Map/Reduce en el cluster EMR
+
+Hacer un programa en python donde hagas map-reduce con la librería [mrjob](https://mrjob.readthedocs.io/en/stable/index.html)
+
+Crear un archivo de configuración con estas variables:
+
+```
+runners:
+    emr:
+        aws_access_key_id: <ID de llave AWS>
+        aws_secret_access_key: <llave secreta AWS>
+        aws_session_token: <token de session AWS>
+        region: <region AWS>
+        ec2_key_pair: <Nombre de llave del cluster>
+        ec2_key_pair_file: <Camino a llave del cluster en tu computador>
+        ssh_tunnel: true
+```
+
+Poner en terminal este commando:
+```
+python3.11 <camino a programa de python> -r emr <camino a archivo de entrada en s3> \
+  --conf-path=<camino a archivo de configuracion> --cluster-id=<id de cluster> \
+  --output-dir=<directorio de salida en s3>
+```
+
+Ya debería correr tu cluster en AWS y dejar el resultado en el directorio de salida que especificaste en el comando.
