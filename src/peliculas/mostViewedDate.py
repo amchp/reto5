@@ -11,15 +11,15 @@ class MRMostViewedDate(MRJob):
             MRStep(reducer=self.reducer_get_most_viewed_date)
         ]
 
-    def mapper_movies_per_date(self, _, line : str): 
-        columns : list[str] = ['user', 'movie', 'rating', 'genre', 'date']
-        data_row : dict[str, str] = dict(zip(columns, line.split(',')))
+    def mapper_movies_per_date(self, _, line): 
+        columns = ['user', 'movie', 'rating', 'genre', 'date']
+        data_row = dict(zip(columns, line.split(',')))
         yield (data_row['date'], 1)
 
-    def reducer_add_movies_per_date(self, dia : str, movies : Generator[tuple[int], None, None]):
+    def reducer_add_movies_per_date(self, dia, movies):
         yield (None, (sum(movies), dia))
         
-    def reducer_get_most_viewed_date(self, _, movies_date : Generator[tuple[tuple[int, str]], None, None]):
+    def reducer_get_most_viewed_date(self, _, movies_date):
         list_movies_date = list(movies_date)
         most_viewed = max(list_movies_date)[0]
         for views, date in list_movies_date:

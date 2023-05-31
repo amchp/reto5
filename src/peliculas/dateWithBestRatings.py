@@ -11,16 +11,16 @@ class MRDateBestRatings(MRJob):
             MRStep(reducer=self.reducer_get_best_rated_dates)
         ]
 
-    def mapper_get_ratings_per_date(self, _, line : str): 
-        columns : list[str] = ['user', 'movie', 'rating', 'genre', 'date']
-        data_row : dict[str, str] = dict(zip(columns, line.split(',')))
+    def mapper_get_ratings_per_date(self, _, line): 
+        columns = ['user', 'movie', 'rating', 'genre', 'date']
+        data_row = dict(zip(columns, line.split(',')))
         yield (data_row['date'], int(data_row['rating']))
 
-    def reducer_mean_ratings_and_date(self, dia : str, ratings : Generator[tuple[int], None, None]):
+    def reducer_mean_ratings_and_date(self, dia, ratings):
         list_ratings = list(ratings)
         yield (None, (sum(list_ratings) / len(list_ratings), dia))
         
-    def reducer_get_best_rated_dates(self, _, ratings_date : Generator[tuple[tuple[float, str]], None, None]):
+    def reducer_get_best_rated_dates(self, _, ratings_date):
         list_ratings_date = list(ratings_date)
         max_rating = max(list_ratings_date)[0]
         for rating, date in list_ratings_date:

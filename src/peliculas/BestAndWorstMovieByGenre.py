@@ -10,14 +10,14 @@ class MRBestAndWorstRatedMovieByGenre(MRJob):
                    reducer=self.reducer_get_max_and_min_mean_ratings_per_genre)
         ]
 
-    def mapper_get_ratings_and_movie_per_genre(self, _, line : str): 
-        columns : list[str] = ['user', 'movie', 'rating', 'genre', 'date']
-        data_row : dict[str, str] = dict(zip(columns, line.split(',')))
+    def mapper_get_ratings_and_movie_per_genre(self, _, line): 
+        columns = ['user', 'movie', 'rating', 'genre', 'date']
+        data_row = dict(zip(columns, line.split(',')))
         yield (data_row['genre'], (int(data_row['rating']), data_row['movie']))
 
-    def reducer_get_max_and_min_mean_ratings_per_genre(self, genre : str, ratings_and_movie : Generator[tuple[tuple[int, str]], None, None]):
-        movies_sum_ratings : dict[str, list[int]] = {}
-        num_ratings : dict[str, int] = {}
+    def reducer_get_max_and_min_mean_ratings_per_genre(self, genre, ratings_and_movie):
+        movies_sum_ratings = {}
+        num_ratings = {}
         for rating, movie in ratings_and_movie:
             if movie in movies_sum_ratings:
                 movies_sum_ratings[movie] += rating

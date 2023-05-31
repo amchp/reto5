@@ -1,3 +1,4 @@
+from typing import Generator
 from mrjob.job import MRJob
 from mrjob.step import MRStep
 
@@ -11,25 +12,27 @@ class MRBlackDate(MRJob):
             MRStep(reducer=self.reducer_get_date_with_most_min_price)
         ]
 
-    def mapper_get_prices_and_dates_per_company(self, _, line : str): 
-        columns : list[str] = ['company', 'price', 'date']
-        data_row : dict[str, str] = dict(zip(columns, line.split(',')))
-        yield (data_row['company'], (int(data_row['price']), data_row['date']))
+    def mapper_get_prices_and_dates_per_company(self, _, line): 
+        columns = ['company', 'price', 'date']
+        data_row = dict(zip(columns, line.split(',')))
+        yield (data_row['company'], (float(data_row['price']), data_row['date']))
 
-    def reducer_get_dates_with_min_price(self, company : str, price_dates : tuple[tuple[int, str]]):
+    def reducer_get_dates_with_min_price(self, company, price_dates):
         list_price_dates = list(price_dates)
-        list_price_dates.sort()
-        min_price = price_dates[0][0]
+        min_price = min(list_price_dates)[0]
         for price, date in list_price_dates:
-            if min_price < price:
-                break
-            yield (date, 1)
+            if min_price == price:
+                yield (date, 1)
 
-    def reducer_sum_dates_with_min_price(self, date: str, companies: tuple[int]):
+    def reducer_sum_dates_with_min_price(self, date, companies):
         yield (None, (sum(companies), date))
 
-    def reducer_get_date_with_most_min_price(self, _, sum_dates: tuple[int, str]):
-        yield max(sum_dates)
+    def reducer_get_date_with_most_min_price(self, _, sum_dates):
+        list_sum_dates = list(sum_dates)
+        min_stocks = min(list_sum_dates)[0]
+        for num_stocks, date in list_sum_dates:
+            if num_stocks == min_stocks:
+                yield (date, num_stocks)
 
 if __name__ == '__main__':
     MRBlackDate.run()

@@ -10,14 +10,14 @@ class MRMoviePerUser(MRJob):
                    reducer=self.reducer_get_movies_and_mean_rating),
         ]
 
-    def mapper_get_prices_and_movie_per_user(self, _, line : str): 
-        columns : list[str] = ['user', 'movie', 'rating', 'genre', 'date']
-        data_row : dict[str, str] = dict(zip(columns, line.split(',')))
+    def mapper_get_prices_and_movie_per_user(self, _, line): 
+        columns = ['user', 'movie', 'rating', 'genre', 'date']
+        data_row = dict(zip(columns, line.split(',')))
         yield (data_row['user'], (data_row['movie'], int(data_row['rating'])))
 
-    def reducer_get_movies_and_mean_rating(self, user : str, movie_ratings : Generator[tuple[tuple[str, int]], None, None]):
+    def reducer_get_movies_and_mean_rating(self, user, movie_ratings):
         list_movie_ratings = list(movie_ratings)
-        movies : dict[str, bool] = {}
+        movies = {}
         ratings = 0
         for movie, rating in list_movie_ratings:
             movies[movie] = True

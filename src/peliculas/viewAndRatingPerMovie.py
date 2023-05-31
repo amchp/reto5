@@ -10,12 +10,12 @@ class MRViewAndRatingPerMovie(MRJob):
                    reducer=self.reducer_add_views_and_mean_ratings)
         ]
 
-    def mapper_get_views_and_ratings_per_movie(self, _, line : str): 
-        columns : list[str] = ['user', 'movie', 'rating', 'genre', 'date']
-        data_row : dict[str, str] = dict(zip(columns, line.split(',')))
+    def mapper_get_views_and_ratings_per_movie(self, _, line): 
+        columns = ['user', 'movie', 'rating', 'genre', 'date']
+        data_row = dict(zip(columns, line.split(',')))
         yield (data_row['movie'], (1, int(data_row['rating'])))
 
-    def reducer_add_views_and_mean_ratings(self, movie : str, views_and_ratings : Generator[tuple[tuple[int, int]], None, None]):
+    def reducer_add_views_and_mean_ratings(self, movie, views_and_ratings):
         list_views_and_ratings = list(views_and_ratings)
         views = 0
         ratings = 0
